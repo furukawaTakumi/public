@@ -14,6 +14,8 @@ load_dotenv()
 
 HEADERS = {'User-Agent': os.environ.get('USER_AGENT')}
 CSV_DIR = os.environ.get('CSV_DIR', '.')
+URL_COLNUM = os.environ.get('URL_COLNUM')
+TITLE_COLNUM = os.environ.get('TITLE_COLNUM')
 
 def extract_body(url):
     page = requests.get(url, headers=HEADERS)
@@ -54,10 +56,10 @@ if __name__ == '__main__':
             
             for idx, row in enumerate(csv_reader):
                 print('process', row)
-                url = row[3]
+                url = row[URL_COLNUM]
                 body = extract_body(url)
-                counter = title_word_counter(row[2], body)
-                result.append([sum(counter.values()), row[2], url])
+                counter = title_word_counter(row[TITLE_COLNUM], body)
+                result.append([sum(counter.values()), row[TITLE_COLNUM], url])
                 break
 
     result.sort(reverse=True)
