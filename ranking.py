@@ -34,7 +34,7 @@ def title_word_counter(title, body):
         x['pos'] == '形容詞'
         )
     subtitle_items = filter(fuzokugo_filter, mecab_parse(title))
-    subtitle_items = map(lambda x: x['base'] if x['base'] != '*' else x['surface'], subtitle_items)
+    subtitle_items = list(map(lambda x: x['base'] if x['base'] != '*' else x['surface'], subtitle_items))
     result = Counter()
 
     if body == '':
@@ -45,7 +45,7 @@ def title_word_counter(title, body):
         body_counter = Counter(body_items)
         for word in subtitle_items:
             result[word] += (body_counter[word] > 0)
-        return result
+        return round(sum(result.values()) / len(set(subtitle_items)), 3)
 
 if __name__ == '__main__':
     result = []
@@ -58,8 +58,8 @@ if __name__ == '__main__':
                 print('process', row)
                 url = row[URL_COLNUM]
                 body = extract_body(url)
-                counter = title_word_counter(row[TITLE_COLNUM], body)
-                result.append([sum(counter.values()), row[TITLE_COLNUM], url])
+                score = title_word_counter(row[TITLE_COLNUM], body)
+                result.append([score, row[TITLE_COLNUM], url])
 
     result.sort(reverse=True)
     with open('output.csv', 'a') as wf:
